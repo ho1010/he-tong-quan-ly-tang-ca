@@ -1,36 +1,147 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quản lý Tăng ca - HY TECH
 
-## Getting Started
+Hệ thống quản lý tăng ca nội bộ cho công ty HY TECH, xây dựng bằng Next.js 14 + Supabase.
 
-First, run the development server:
+## Tính năng
+
+- **Nhập tăng ca hàng ngày**: Trưởng phòng nhập giờ tăng ca cho từng nhân viên
+- **Tổng hợp theo tháng**: Xem báo cáo tăng ca theo tháng/phòng ban
+- **Tính lương tăng ca**: Tự động tính toán với hệ số (ngày thường 1.5x, cuối tuần 2.0x, lễ 3.0x)
+- **Xuất Excel**: Xuất bảng tăng ca và bảng lương tăng ca
+- **Phân quyền**: Admin / Kế toán / Trưởng phòng
+
+## Yêu cầu
+
+- Node.js 18+
+- Tài khoản Supabase (free tier được)
+
+## Cài đặt
+
+### 1. Cài đặt dependencies
+
+```bash
+cd hy-tech-overtime
+npm install
+```
+
+### 2. Cấu hình Supabase
+
+1. Tạo project mới tại [supabase.com](https://supabase.com)
+2. Vào **Settings > API** để lấy `Project URL` và `anon public` key
+3. Tạo file `.env.local` (copy từ `.env.example`):
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+### 3. Tạo Database Schema
+
+1. Vào **Supabase Dashboard > SQL Editor**
+2. Chạy file `supabase/schema.sql`
+3. Chạy file `supabase/seed.sql` (dữ liệu mẫu)
+
+### 4. Tạo tài khoản test
+
+Vào **Supabase Dashboard > Authentication > Users**, tạo 4 tài khoản:
+
+| Email | Mật khẩu | Ghi chú |
+|-------|----------|---------|
+| admin@hytech.com | password123 | Admin |
+| ketoan@hytech.com | password123 | Kế toán |
+| tp.kythuat@hytech.com | password123 | Trưởng phòng Kỹ thuật |
+| tp.sanxuat@hytech.com | password123 | Trưởng phòng Sản xuất |
+
+Sau khi tạo, chạy SQL sau để gán quyền (thay UUID thực tế):
+
+```sql
+-- Lấy UUID của các tài khoản vừa tạo
+SELECT id, email FROM auth.users;
+
+-- Cập nhật role (thay <uuid> bằng ID thực)
+UPDATE profiles SET role='admin', full_name='Quản trị viên' WHERE id='<admin-uuid>';
+UPDATE profiles SET role='accounting', full_name='Kế toán viên' WHERE id='<ketoan-uuid>';
+UPDATE profiles SET role='department_head', full_name='Trưởng phòng Kỹ thuật',
+  department_id='d1000000-0000-0000-0000-000000000001' WHERE id='<tp-kt-uuid>';
+UPDATE profiles SET role='department_head', full_name='Trưởng phòng Sản xuất',
+  department_id='d1000000-0000-0000-0000-000000000002' WHERE id='<tp-sx-uuid>';
+```
+
+### 5. Chạy ứng dụng
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Truy cập [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Cấu trúc thư mục
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+├── login/          # Trang đăng nhập
+├── dashboard/      # Trưởng phòng - nhập tăng ca
+│   └── tong-hop/   # Tổng hợp tháng
+├── ke-toan/        # Kế toán - xem và xuất báo cáo
+│   ├── chi-tiet/   # Chi tiết tăng ca
+│   └── tinh-luong/ # Tính lương tăng ca
+├── admin/          # Admin - quản lý hệ thống
+│   ├── phong-ban/  # Quản lý phòng ban
+│   ├── nhan-vien/  # Quản lý nhân viên
+│   ├── tai-khoan/  # Quản lý tài khoản
+│   └── luong/      # Cài đặt lương & hệ số
+└── api/
+    └── admin/
+        └── create-user/  # API tạo tài khoản (admin only)
 
-## Learn More
+components/
+├── layout/         # Sidebar, AppLayout, PageHeader
+├── overtime/       # OvertimeEntryTable, SalaryCalculator, ...
+└── admin/          # DepartmentManager, EmployeeManager, ...
 
-To learn more about Next.js, take a look at the following resources:
+lib/
+├── supabase/       # Client, Server, Middleware
+├── utils/          # format.ts (date, currency, calculations)
+├── excel-export.ts # Xuất Excel với xlsx
+└── types.ts        # TypeScript interfaces
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+supabase/
+├── schema.sql      # DDL: tables, RLS policies, functions
+└── seed.sql        # Dữ liệu mẫu (60 nhân viên, 6 phòng ban)
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Công thức tính lương tăng ca
 
-## Deploy on Vercel
+```
+Lương giờ = Lương cơ bản ÷ (26 ngày × 8 giờ)
+Tiền tăng ca = Lương giờ × Số giờ × Hệ số
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Hệ số mặc định:
+- Ngày thường: **1.5x**
+- Ngày nghỉ tuần (Thứ 7, CN): **2.0x**
+- Ngày lễ: **3.0x**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Phân quyền
+
+| Tính năng | Admin | Kế toán | Trưởng phòng |
+|-----------|-------|---------|--------------|
+| Nhập tăng ca | ✅ | ❌ | ✅ (phòng mình) |
+| Xem tất cả | ✅ | ✅ | ❌ (chỉ phòng mình) |
+| Xuất Excel | ✅ | ✅ | ❌ |
+| Tính lương | ✅ | ✅ | ❌ |
+| Quản lý nhân viên | ✅ | ❌ | ❌ |
+| Cài đặt lương | ✅ | ❌ | ❌ |
+
+## Tech Stack
+
+- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS, shadcn/ui
+- **Backend**: Supabase (PostgreSQL + Auth + RLS)
+- **Export**: xlsx library
+- **Font**: Be Vietnam Pro (Google Fonts)
+
+## Lưu ý triển khai
+
+- Cần bật **Row Level Security** trên Supabase (đã có trong schema.sql)
+- API tạo tài khoản (`/api/admin/create-user`) cần **Service Role Key** để hoạt động đầy đủ
+- Thêm `SUPABASE_SERVICE_ROLE_KEY` vào environment variables khi deploy

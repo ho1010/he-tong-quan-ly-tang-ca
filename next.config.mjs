@@ -1,4 +1,11 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ['better-sqlite3', 'bcryptjs'],
+    serverActions: {
+      allowedOrigins: ['localhost:3000'],
+    },
+  },
+}
 
-export default nextConfig;
+export default nextConfig
