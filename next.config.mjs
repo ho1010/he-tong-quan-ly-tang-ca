@@ -2,9 +2,6 @@
 const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['better-sqlite3', 'bcryptjs'],
-    serverActions: {
-      allowedOrigins: ['localhost:3000'],
-    },
   },
 }
 

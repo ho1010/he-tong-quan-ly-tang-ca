@@ -3,7 +3,9 @@ import path from 'path'
 import fs from 'fs'
 import bcrypt from 'bcryptjs'
 
-const DB_PATH = path.join(process.cwd(), 'data', 'overtime.db')
+// In production (Railway), set DB_PATH env var to point to a persistent Volume
+// e.g. DB_PATH=/data/overtime.db  (Railway Volume mounted at /data)
+const DB_PATH = process.env.DB_PATH ?? path.join(process.cwd(), 'data', 'overtime.db')
 
 declare global {
   // eslint-disable-next-line no-var
