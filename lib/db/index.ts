@@ -90,7 +90,7 @@ function initSchema(db: Database.Database) {
       created_by TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now')),
-      UNIQUE(employee_id, work_date)
+      UNIQUE(employee_id, work_date, day_type)
     )`)
   } else if (otTableDef.includes("'weekday'") || otTableDef.includes('"weekday"')) {
     // Migrate old 3-type to new 6-type — use step-by-step to avoid multi-statement issues
@@ -128,6 +128,28 @@ function initSchema(db: Database.Database) {
     db.exec(`DROP TABLE overtime_records`)
     db.exec(`ALTER TABLE overtime_records_new RENAME TO overtime_records`)
 
+    db.pragma('foreign_keys = ON')
+  }
+
+  // Migrate UNIQUE(employee_id, work_date) → UNIQUE(employee_id, work_date, day_type)
+  if (otTableDef && !otTableDef.includes('work_date, day_type')) {
+    db.pragma('foreign_keys = OFF')
+    db.exec(`DROP TABLE IF EXISTS overtime_records_new`)
+    db.exec(`CREATE TABLE overtime_records_new (
+      id TEXT PRIMARY KEY,
+      employee_id TEXT NOT NULL,
+      work_date TEXT NOT NULL,
+      hours REAL NOT NULL,
+      day_type TEXT NOT NULL,
+      note TEXT,
+      created_by TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
+      UNIQUE(employee_id, work_date, day_type)
+    )`)
+    db.exec(`INSERT OR IGNORE INTO overtime_records_new SELECT * FROM overtime_records`)
+    db.exec(`DROP TABLE overtime_records`)
+    db.exec(`ALTER TABLE overtime_records_new RENAME TO overtime_records`)
     db.pragma('foreign_keys = ON')
   }
 

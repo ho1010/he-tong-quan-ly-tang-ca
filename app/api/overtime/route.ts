@@ -51,30 +51,56 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const { upserts, deletes } = body as {
-    upserts: { employee_id: string; work_date: string; hours: number; day_type: string; note: string | null; created_by: string }[]
-    deletes: { employee_ids: string[]; work_date: string }
+    upserts: {
+      employee_id: string
+      work_date: string
+      hours: number
+      day_type: string
+      note: string | null
+      created_by: string
+    }[]
+    deletes: {
+      // Delete specific records by their DB id
+      ids?: string[]
+      // Delete all records for given employees on a date (used by "save all")
+      employee_ids?: string[]
+      work_date?: string
+    }
   }
 
   const db = getDb()
 
+  const deleteByIdStmt = db.prepare('DELETE FROM overtime_records WHERE id = ?')
+  const deleteByEmpStmt = db.prepare('DELETE FROM overtime_records WHERE employee_id = ? AND work_date = ?')
   const upsertStmt = db.prepare(`
     INSERT INTO overtime_records (id, employee_id, work_date, hours, day_type, note, created_by, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
-    ON CONFLICT(employee_id, work_date) DO UPDATE SET
-      hours=excluded.hours, day_type=excluded.day_type,
-      note=excluded.note, updated_at=datetime('now')
+    ON CONFLICT(employee_id, work_date, day_type) DO UPDATE SET
+      hours=excluded.hours,
+      note=excluded.note,
+      updated_at=datetime('now')
   `)
 
-  const deleteStmt = db.prepare('DELETE FROM overtime_records WHERE employee_id = ? AND work_date = ?')
-
   const tx = db.transaction(() => {
-    for (const u of (upserts ?? [])) {
-      upsertStmt.run(crypto.randomUUID(), u.employee_id, u.work_date, u.hours, u.day_type, u.note ?? null, u.created_by)
+    // 1. Delete first (prevents conflict on re-insert during "save all")
+    if (deletes?.ids?.length) {
+      for (const id of deletes.ids) {
+        deleteByIdStmt.run(id)
+      }
     }
     if (deletes?.employee_ids?.length && deletes.work_date) {
       for (const eid of deletes.employee_ids) {
-        deleteStmt.run(eid, deletes.work_date)
+        deleteByEmpStmt.run(eid, deletes.work_date)
       }
+    }
+
+    // 2. Then upsert
+    for (const u of (upserts ?? [])) {
+      upsertStmt.run(
+        crypto.randomUUID(),
+        u.employee_id, u.work_date, u.hours, u.day_type,
+        u.note ?? null, u.created_by
+      )
     }
   })
 
