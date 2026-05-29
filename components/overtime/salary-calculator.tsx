@@ -40,23 +40,23 @@ interface Props {
 }
 
 const TYPE_COLORS: Record<DayType, string> = {
-  ot130: 'bg-gray-100 text-gray-600',
-  ot150: 'bg-blue-100 text-blue-700',
-  ot200: 'bg-orange-100 text-orange-700',
-  ot210: 'bg-purple-100 text-purple-700',
-  ot270: 'bg-pink-100 text-pink-700',
-  ot300: 'bg-red-100 text-red-700',
-  ot390: 'bg-rose-200 text-rose-800',
+  ot150:  'bg-blue-100 text-blue-700',
+  ot200:  'bg-orange-100 text-orange-700',
+  ot200n: 'bg-cyan-100 text-cyan-700',
+  ot210:  'bg-purple-100 text-purple-700',
+  ot270:  'bg-pink-100 text-pink-700',
+  ot300:  'bg-red-100 text-red-700',
+  ot390:  'bg-rose-200 text-rose-800',
 }
 
 const TYPE_BG: Record<DayType, string> = {
-  ot130: 'bg-gray-50/40',
-  ot150: 'bg-blue-50/40',
-  ot200: 'bg-orange-50/40',
-  ot210: 'bg-purple-50/40',
-  ot270: 'bg-pink-50/40',
-  ot300: 'bg-red-50/40',
-  ot390: 'bg-rose-50/40',
+  ot150:  'bg-blue-50/40',
+  ot200:  'bg-orange-50/40',
+  ot200n: 'bg-cyan-50/40',
+  ot210:  'bg-purple-50/40',
+  ot270:  'bg-pink-50/40',
+  ot300:  'bg-red-50/40',
+  ot390:  'bg-rose-50/40',
 }
 
 function emptyByType(): Record<DayType, TypeStat> {
@@ -249,13 +249,13 @@ export function SalaryCalculator({ departments, rateRules }: Props) {
           {rateRules.map((r, idx) => {
             const dt = r.day_type as DayType
             const colorMap: Record<DayType, { bg: string; badge: string; mul: string }> = {
-              ot130: { bg: 'bg-gray-50',    badge: 'bg-gray-200 text-gray-700',       mul: 'text-gray-700' },
-              ot150: { bg: 'bg-blue-50',    badge: 'bg-blue-200 text-blue-800',       mul: 'text-blue-700' },
-              ot200: { bg: 'bg-orange-50',  badge: 'bg-orange-200 text-orange-800',   mul: 'text-orange-600' },
-              ot210: { bg: 'bg-purple-50',  badge: 'bg-purple-200 text-purple-800',   mul: 'text-purple-700' },
-              ot270: { bg: 'bg-pink-50',    badge: 'bg-pink-200 text-pink-800',       mul: 'text-pink-700' },
-              ot300: { bg: 'bg-red-50',     badge: 'bg-red-200 text-red-800',         mul: 'text-red-600' },
-              ot390: { bg: 'bg-rose-50',    badge: 'bg-rose-200 text-rose-900',       mul: 'text-rose-700' },
+              ot150:  { bg: 'bg-blue-50',    badge: 'bg-blue-200 text-blue-800',       mul: 'text-blue-700' },
+              ot200:  { bg: 'bg-orange-50',  badge: 'bg-orange-200 text-orange-800',   mul: 'text-orange-600' },
+              ot200n: { bg: 'bg-cyan-50',    badge: 'bg-cyan-200 text-cyan-800',       mul: 'text-cyan-700' },
+              ot210:  { bg: 'bg-purple-50',  badge: 'bg-purple-200 text-purple-800',   mul: 'text-purple-700' },
+              ot270:  { bg: 'bg-pink-50',    badge: 'bg-pink-200 text-pink-800',       mul: 'text-pink-700' },
+              ot300:  { bg: 'bg-red-50',     badge: 'bg-red-200 text-red-800',         mul: 'text-red-600' },
+              ot390:  { bg: 'bg-rose-50',    badge: 'bg-rose-200 text-rose-900',       mul: 'text-rose-700' },
             }
             const c = colorMap[dt] ?? { bg: 'bg-white', badge: 'bg-gray-100 text-gray-600', mul: 'text-gray-700' }
             return (

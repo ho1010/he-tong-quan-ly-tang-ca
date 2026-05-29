@@ -34,17 +34,17 @@ interface Props {
 }
 
 const TYPE_HEADER: Record<DayType, { pct: string; sub: string; color: string; bg: string; badge: string }> = {
-  ot130: { pct: '130%', sub: 'Ban đêm',     color: 'text-gray-600',   bg: 'bg-gray-50',   badge: 'bg-gray-100 text-gray-600' },
-  ot150: { pct: '150%', sub: 'Ngày thường', color: 'text-blue-700',   bg: 'bg-blue-50',   badge: 'bg-blue-100 text-blue-700' },
-  ot200: { pct: '200%', sub: 'Chủ nhật',    color: 'text-orange-700', bg: 'bg-orange-50', badge: 'bg-orange-100 text-orange-700' },
-  ot210: { pct: '210%', sub: 'Đêm thường',  color: 'text-purple-700', bg: 'bg-purple-50', badge: 'bg-purple-100 text-purple-700' },
-  ot270: { pct: '270%', sub: 'Đêm CN',      color: 'text-pink-700',   bg: 'bg-pink-50',   badge: 'bg-pink-100 text-pink-700' },
-  ot300: { pct: '300%', sub: 'Ngày lễ',     color: 'text-red-700',    bg: 'bg-red-50',    badge: 'bg-red-100 text-red-700' },
-  ot390: { pct: '390%', sub: 'Đêm lễ',      color: 'text-rose-800',   bg: 'bg-rose-50',   badge: 'bg-rose-200 text-rose-800' },
+  ot150:  { pct: '150%', sub: 'Ngày thường', color: 'text-blue-700',   bg: 'bg-blue-50',   badge: 'bg-blue-100 text-blue-700' },
+  ot200:  { pct: '200%', sub: 'CN ban ngày', color: 'text-orange-700', bg: 'bg-orange-50', badge: 'bg-orange-100 text-orange-700' },
+  ot200n: { pct: '200%', sub: 'Đêm thường', color: 'text-cyan-700',   bg: 'bg-cyan-50',   badge: 'bg-cyan-100 text-cyan-700' },
+  ot210:  { pct: '210%', sub: 'Đêm HC',     color: 'text-purple-700', bg: 'bg-purple-50', badge: 'bg-purple-100 text-purple-700' },
+  ot270:  { pct: '270%', sub: 'Đêm CN',     color: 'text-pink-700',   bg: 'bg-pink-50',   badge: 'bg-pink-100 text-pink-700' },
+  ot300:  { pct: '300%', sub: 'Ngày lễ',    color: 'text-red-700',    bg: 'bg-red-50',    badge: 'bg-red-100 text-red-700' },
+  ot390:  { pct: '390%', sub: 'Đêm lễ',     color: 'text-rose-800',   bg: 'bg-rose-50',   badge: 'bg-rose-200 text-rose-800' },
 }
 
 function emptyByType(): Record<DayType, number> {
-  return { ot130: 0, ot150: 0, ot200: 0, ot210: 0, ot270: 0, ot300: 0, ot390: 0 }
+  return { ot150: 0, ot200: 0, ot200n: 0, ot210: 0, ot270: 0, ot300: 0, ot390: 0 }
 }
 
 export function MonthlySummaryTable({ departmentId }: Props) {

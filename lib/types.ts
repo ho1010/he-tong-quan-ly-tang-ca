@@ -1,5 +1,5 @@
 export type UserRole = 'admin' | 'accounting' | 'department_head'
-export type DayType = 'ot130' | 'ot150' | 'ot200' | 'ot210' | 'ot270' | 'ot300' | 'ot390'
+export type DayType = 'ot150' | 'ot200' | 'ot200n' | 'ot210' | 'ot270' | 'ot300' | 'ot390'
 
 export interface Department {
   id: string
@@ -61,25 +61,25 @@ export interface OvertimeRateRule {
 }
 
 export const DAY_TYPE_LABELS: Record<DayType, string> = {
-  ot130: 'Làm việc ban đêm (130%)',
-  ot150: 'Tăng ca ngày thường ban ngày (150%)',
-  ot200: 'Làm ngày chủ nhật ban ngày (200%)',
-  ot210: 'Tăng ca đêm ngày thường (210%)',
-  ot270: 'Làm ngày chủ nhật ban đêm (270%)',
-  ot300: 'Làm ngày lễ/Tết ban ngày (300%)',
-  ot390: 'Làm ngày lễ/Tết ban đêm (390%)',
+  ot150:  'Tăng ca ngày thường ban ngày (150%)',
+  ot200:  'Làm ngày chủ nhật vào ban ngày (200%)',
+  ot200n: 'Tăng ca đêm ngày thường (200%)',
+  ot210:  'Tăng ca đêm ngày thường sau TC hành chính (210%)',
+  ot270:  'Làm ngày chủ nhật vào ban đêm (270%)',
+  ot300:  'Làm ngày lễ, tết vào ban ngày (300%)',
+  ot390:  'Làm ngày lễ, tết vào ban đêm (390%)',
 }
 
-export const DAY_TYPES: DayType[] = ['ot130', 'ot150', 'ot200', 'ot210', 'ot270', 'ot300', 'ot390']
+export const DAY_TYPES: DayType[] = ['ot150', 'ot200', 'ot200n', 'ot210', 'ot270', 'ot300', 'ot390']
 
 export const DAY_TYPE_MULTIPLIERS: Record<DayType, number> = {
-  ot130: 1.3,
-  ot150: 1.5,
-  ot200: 2.0,
-  ot210: 2.1,
-  ot270: 2.7,
-  ot300: 3.0,
-  ot390: 3.9,
+  ot150:  1.5,
+  ot200:  2.0,
+  ot200n: 2.0,
+  ot210:  2.1,
+  ot270:  2.7,
+  ot300:  3.0,
+  ot390:  3.9,
 }
 
 export const ROLE_LABELS: Record<UserRole, string> = {

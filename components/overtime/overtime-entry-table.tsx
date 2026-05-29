@@ -13,13 +13,13 @@ import { toast } from 'sonner'
 import type { Employee, DayType } from '@/lib/types'
 
 const OT_TYPES: { value: DayType; label: string }[] = [
-  { value: 'ot130', label: 'Làm việc ban đêm (130%)' },
-  { value: 'ot150', label: 'Tăng ca ngày thường ban ngày (150%)' },
-  { value: 'ot200', label: 'Làm ngày chủ nhật ban ngày (200%)' },
-  { value: 'ot210', label: 'Tăng ca đêm ngày thường (210%)' },
-  { value: 'ot270', label: 'Làm ngày chủ nhật ban đêm (270%)' },
-  { value: 'ot300', label: 'Làm ngày lễ/Tết ban ngày (300%)' },
-  { value: 'ot390', label: 'Làm ngày lễ/Tết ban đêm (390%)' },
+  { value: 'ot150',  label: 'Tăng ca ngày thường ban ngày (150%)' },
+  { value: 'ot200',  label: 'Làm ngày chủ nhật vào ban ngày (200%)' },
+  { value: 'ot200n', label: 'Tăng ca đêm ngày thường (200%)' },
+  { value: 'ot210',  label: 'Tăng ca đêm ngày thường sau TC hành chính (210%)' },
+  { value: 'ot270',  label: 'Làm ngày chủ nhật vào ban đêm (270%)' },
+  { value: 'ot300',  label: 'Làm ngày lễ, tết vào ban ngày (300%)' },
+  { value: 'ot390',  label: 'Làm ngày lễ, tết vào ban đêm (390%)' },
 ]
 
 interface EntryItem {

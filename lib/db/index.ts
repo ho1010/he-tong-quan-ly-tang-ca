@@ -187,9 +187,13 @@ function initSchema(db: Database.Database) {
     seedRateRules(db)
   }
 
-  // Ensure 6 rate rules exist
+  // Migrate ot130 → ot200n in overtime_records
+  db.exec("UPDATE overtime_records SET day_type='ot200n' WHERE day_type='ot130'")
+
+  // Ensure rate rules are up-to-date (reseed if ot130 exists or count < 7)
+  const hasOt130Rule = (db.prepare("SELECT COUNT(*) as c FROM overtime_rate_rules WHERE day_type='ot130'").get() as { c: number }).c > 0
   const ruleCount = (db.prepare('SELECT COUNT(*) as c FROM overtime_rate_rules').get() as { c: number }).c
-  if (ruleCount < 7) {
+  if (ruleCount < 7 || hasOt130Rule) {
     db.exec('DELETE FROM overtime_rate_rules')
     seedRateRules(db)
   }
@@ -208,13 +212,13 @@ function initSchema(db: Database.Database) {
 
 function seedRateRules(db: Database.Database) {
   const insertRule = db.prepare('INSERT OR REPLACE INTO overtime_rate_rules (id, day_type, rule_name, multiplier) VALUES (?, ?, ?, ?)')
-  insertRule.run('rule-01', 'ot130', 'Làm việc ban đêm (130%)', 1.3)
-  insertRule.run('rule-02', 'ot150', 'Tăng ca ngày thường ban ngày (150%)', 1.5)
-  insertRule.run('rule-03', 'ot200', 'Làm ngày chủ nhật ban ngày (200%)', 2.0)
-  insertRule.run('rule-04', 'ot210', 'Tăng ca đêm ngày thường (210%)', 2.1)
-  insertRule.run('rule-05', 'ot270', 'Làm ngày chủ nhật ban đêm (270%)', 2.7)
-  insertRule.run('rule-06', 'ot300', 'Làm ngày lễ/Tết ban ngày (300%)', 3.0)
-  insertRule.run('rule-07', 'ot390', 'Làm ngày lễ/Tết ban đêm (390%)', 3.9)
+  insertRule.run('rule-01', 'ot150',  'Tăng ca ngày thường ban ngày (150%)', 1.5)
+  insertRule.run('rule-02', 'ot200',  'Làm ngày chủ nhật vào ban ngày (200%)', 2.0)
+  insertRule.run('rule-03', 'ot200n', 'Tăng ca đêm ngày thường (200%)', 2.0)
+  insertRule.run('rule-04', 'ot210',  'Tăng ca đêm ngày thường sau TC hành chính (210%)', 2.1)
+  insertRule.run('rule-05', 'ot270',  'Làm ngày chủ nhật vào ban đêm (270%)', 2.7)
+  insertRule.run('rule-06', 'ot300',  'Làm ngày lễ, tết vào ban ngày (300%)', 3.0)
+  insertRule.run('rule-07', 'ot390',  'Làm ngày lễ, tết vào ban đêm (390%)', 3.9)
 }
 
 function seed(db: Database.Database) {
